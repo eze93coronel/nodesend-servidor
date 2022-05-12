@@ -8,13 +8,14 @@ exports.nuevoEnlace = async (req,res,next) => {
    if(!errores.isEmpty()){
        return res.status(400).json({errores:errores.array()});
    }
+   //  console.log(req.body);
 
    // craer un objeto de enlace
-     const {nombre_original, password}= req.body;
+     const {nombre_original, password,nombre}= req.body;
 
      const enlace = new Enlaces();
     enlace.url = shortid.generate();
-    enlace.nombre = shortid.generate();
+    enlace.nombre = nombre;
     enlace.nombre_original = nombre_original;
   
 
@@ -46,13 +47,28 @@ if(req.usuario){
    }
 
     console.log(enlace)
+};
+
+//obtiene un listado de los enlaces ela app 
+exports.todosEnlaces = async(req,res)=>{
+  try {
+    const enlaces = await Enlaces.find({}).select('url -_id');
+    res.json({enlaces});
+  } catch (error) {
+    console.log(error)
+  }
 }
+
+
+
 
 //obtener le enlace 
 
 exports.obtenerEnlace = async(req,res,next)=>{
       
   const {url} = req.params;
+  console.log(url);
+
         const enlace = await Enlaces.findOne({url});
 
       if(!enlace) {
@@ -61,23 +77,9 @@ exports.obtenerEnlace = async(req,res,next)=>{
     
       // si el enlace existe
       res.json({archivo: enlace.nombre})
+  
+      next()
 
-      //si la descargas son = a 1 entoces borrar ese archivo y borrar esa entrada
-      const {descargas,nombre} = enlace;
-     
-   if(descargas === 1 ){
-       // eliminar el archivo 
-        req.archivo = nombre;
-       //eliminar entrada ala bd 
-         Enlaces.findOneAndRemove(req.params.url);
-
-       next();
-   }else{
-     
-      // si las descarags son > a 1 entoces restar a -1 
-      enlace.descargas--;
-      await enlace.save();
-     
-   }
+    
 
 }

@@ -25,6 +25,9 @@ const port = process.env.PORT || 4000;
 //habuilitar los valores de un body 
 app.use(express.json());
 
+
+app.use(express.static('uploads'));
+
 // rutas de la app de 
 app.use('/api/usuarios', require('./routes/usuarios'))
 app.use('/api/auth', require('./routes/auth'))
