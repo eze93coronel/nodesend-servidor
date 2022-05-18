@@ -17,8 +17,6 @@ router.get('/:archivo',
 
 )
 
-router.delete('/:id',
-     archivosController.eliminarArchivo
-)
+
 
 module.exports =router;

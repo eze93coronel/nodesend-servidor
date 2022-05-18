@@ -1,9 +1,9 @@
 const Usuario = require('../models/Usuarios');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config({path:'variables.env'})
 const {validationResult} =  require('express-validator');
 
-require('dotenv').config({path:'variables.env'})
 exports.autenticarUsuario = async (req,res,next)=>{
         // revisar si ahiaa errores en
 
@@ -19,7 +19,7 @@ exports.autenticarUsuario = async (req,res,next)=>{
    // console.log(usuario)
 if(!usuario){
     return res.status(401).json({msg: 'el usuario no existe pa'})
-   return next();
+    return next();
 }
         //verificar el pass y autenticar usuario
 if(bcrypt.compareSync(password,usuario.password)){
@@ -28,7 +28,7 @@ if(bcrypt.compareSync(password,usuario.password)){
         nombre: usuario.nombre,
         email: usuario.email,
     },process.env.SECRETA,{
-        expiresIn : '20h'
+        expiresIn : '1h'
     });
     res.json({token})
 }else{

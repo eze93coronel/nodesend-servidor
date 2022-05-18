@@ -1,7 +1,8 @@
   const Enlaces = require('../models/Enlace');
-    const shortid = require('shortid');
+   const shortid = require('shortid');
     const bcrypt = require('bcrypt');
     const {validationResult} =  require('express-validator');
+
 exports.nuevoEnlace = async (req,res,next) => {
    // verificar si ahi errores 
    const errores =validationResult(req);
@@ -11,7 +12,7 @@ exports.nuevoEnlace = async (req,res,next) => {
    //  console.log(req.body);
 
    // craer un objeto de enlace
-     const {nombre_original, password,nombre}= req.body;
+     const {nombre_original,nombre}= req.body;
 
      const enlace = new Enlaces();
     enlace.url = shortid.generate();
@@ -42,6 +43,7 @@ if(req.usuario){
    try {
        await enlace.save();
     return   res.json({msg:`${enlace.url}`})
+    
    } catch (error) {
        
    }
@@ -57,8 +59,53 @@ exports.todosEnlaces = async(req,res)=>{
   } catch (error) {
     console.log(error)
   }
+};
+
+//retorna si el enlace rtiene password p
+exports.tienePassword = async (req,res,next) => {
+
+  const {url} = req.params;
+  console.log(url);
+
+
+  const enlace = await Enlaces.findOne({url});
+
+  if(!enlace) {
+    res.status(404).json({message:' ese enlace no existe pa'});
+    return next();
+  } 
+
+if(enlace.password){
+  return  res.json({ password :true, enlace: enlace.url});
+}
+  next();
+
 }
 
+//verfiica si el password es correcto
+
+exports.verificarPassword = async (req,res,next) => {
+  console.log('verificando');
+  const {url} = req.params
+  const {password} = req.body;
+
+// consukltar por el enlace 
+const enlace = await Enlaces.findOne({url})
+
+
+//verifcar el password
+if(bcrypt.compareSync(password,enlace.password)){
+   //permitir descargar el archivo al usuario
+  next();
+}else{
+ return  res.status(401).json({message: 'el password es incorrecto'})
+}
+
+ 
+
+
+  
+}
 
 
 
@@ -71,15 +118,20 @@ exports.obtenerEnlace = async(req,res,next)=>{
 
         const enlace = await Enlaces.findOne({url});
 
+//console.log({enlace});
+
       if(!enlace) {
-        res.status(404).json({message:' ese enlacce no exizste pa'});
+        res.status(404).json({message:' ese enlace no existe pa'});
+        return  next();
       } 
     
       // si el enlace existe
-      res.json({archivo: enlace.nombre})
+      res.json({archivo: enlace.nombre, password : false})
   
-      next()
 
-    
 
-}
+next();
+
+
+};
+

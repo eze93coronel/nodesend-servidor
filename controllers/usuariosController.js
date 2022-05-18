@@ -1,6 +1,7 @@
 const Usuario = require('../models/Usuarios')
 const bcrypt = require('bcrypt'); // depemdencia de hasheoo de pass
  const {validationResult} =  require('express-validator');
+ 
 exports.nuevoUsuario = async (req,res)=>{
 
     //mostrando los errores de expreess validator para

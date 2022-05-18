@@ -18,8 +18,6 @@ exports.subirArchivo = async (req,res,next)=>{
         })
    }
   const upload = multer(configuracionMulter).single('archivo');
-
-
     upload(req,res, async(error)=>{
         console.log(req.file);
 
@@ -33,45 +31,55 @@ exports.subirArchivo = async (req,res,next)=>{
 
 }
 
+
+
 exports.eliminarArchivo = async (req,res)=>{
   console.log(req.archivo);
 
   try {
       fs.unlinkSync(__dirname + `/../uploads/${req.archivo}`)
-      console.log(object);
+      console.log('archivo eliminado');
   } catch (error) {
         console.log(error);
+
   }
 }
 
-//descarga un archivo 
-exports.descargar =async (req, res,next)=>{
-   //obrtiene el enlace 
-   const {archivo} = req.params;
-   const enlace = await Enlaces.findOne({nombre : archivo});
+//descarga un archuvo
+exports.descargar = async (req, res,next)=>{
+
+    console.log('entraste en descargar ');
+    
+    //obrtiene el enlace 
+    const {archivo} = req.params;
+    const enlace = await Enlaces.findOne({nombre : archivo});
+   
+    console.log({enlace});
   
+ 
+ 
+     const archivoDescarga = __dirname + '/../uploads/' + archivo;
+     res.download(archivoDescarga);
+    
+    // console.log({archivoDescarga});
+    // console.log('el problema esta en la asignacion de archivos');
+    // console.log('que paso acac');
 
-
-    const archivoDescarga = __dirname + '/../uploads/' + archivo;
-    res.download(archivoDescarga);
-
-
-    // eliminar enlace y entrada ala base de datos 
-      //si la descargas son = a 1 entoces borrar ese archivo y borrar esa entrada
-      const {descargas,nombre} = enlace;
-     
-   if(descargas === 1 ){
-       // eliminar el archivo 
-        req.archivo = nombre;
-       //eliminar entrada ala bd 
-         Enlaces.findOneAndRemove(enlace.id);
-
-       next();
-   }else{
-     
-      // si las descarags son > a 1 entoces restar a -1 
-      enlace.descargas--;
-      await enlace.save();
-     
-   }
-}
+   const { descargas ,nombre} = enlace;
+      
+       if(descargas === 1 ){
+         // eliminar el archivo 
+          req.archivo = nombre;
+         //eliminar entrada ala bd 
+        await  Enlaces.findOneAndRemove(enlace.id);
+         next();
+     }else{
+       
+        // si las descarags son > a 1 entoces restar a -1 
+        enlace.descargas--;
+        await enlace.save();
+       
+     }
+ 
+   
+ }

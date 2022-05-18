@@ -16,7 +16,7 @@ const Schema = mongoose.Schema;
       },
       descargas:{
           type:Number, 
-          default: 1    
+          default:  1   
       },
       autor:{
        type: mongoose.Schema.Types.ObjectId,

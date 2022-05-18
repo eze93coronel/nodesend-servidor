@@ -1,5 +1,4 @@
 const express = require('express');
-const { use } = require('express/lib/application');
 const conectarDB = require('./config/db');
 const cors = require('cors');
 
@@ -37,6 +36,6 @@ app.use('/api/archivos', require('./routes/archivos'))
 
 
 // arrancar el servidor
-app.listen(port, 'localhost',()=>{
+app.listen(port, '0.0.0.0',()=>{
     console.log(`èl servidor edsta arrancanso en el puerto ${port}`);
 })
